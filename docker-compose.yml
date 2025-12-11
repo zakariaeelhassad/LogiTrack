@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: parcel-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: parcel_management
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - parcel-network
+
+  app:
+    build: .
+    container_name: parcel-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: parcel_management
+      JWT_SECRET: your-production-secret-key-min-256-bits-please-change
+      JWT_ISSUER: parcel-management-system
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      - mongodb
+    networks:
+      - parcel-network
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: parcel-n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://n8n:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - parcel-network
+    depends_on:
+      - app
+
+volumes:
+  mongodb_data:
+  n8n_data:
+
+networks:
+  parcel-network:
+    driver: bridge
