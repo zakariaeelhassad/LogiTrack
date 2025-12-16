@@ -31,7 +31,7 @@ jobs:
         run: docker build -t parcel-management:latest .
 
       - name: Run Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for services
         run: sleep 30
