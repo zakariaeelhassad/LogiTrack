@@ -23,7 +23,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,info
+  endpoint:
+    health:
+      enabled: true
   health:
-    defaults:
+    mongo:
+      enabled: true
+    diskspace:
+      enabled: false
+    db:
       enabled: false
