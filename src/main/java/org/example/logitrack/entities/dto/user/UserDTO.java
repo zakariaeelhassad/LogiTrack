@@ -8,7 +8,7 @@ public record UserDTO(
         String id,
         String login,
         Role role,
-        boolean active,
+        Boolean active,
         TransporteurStatut statut,
         Specialite specialite
 ) {
